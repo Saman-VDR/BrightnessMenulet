@@ -28,6 +28,17 @@
 
 @implementation MainMenuController
 
+/*
+ - (BOOL)validateMenuItem:(NSMenuItem *)menuItem
+ {
+ DebugLog(@"validate %@", [menuItem title]);
+ if ([menuItem tag] == kMenuAutoBrightness) {
+ return lmuCon.avaible;
+ }
+ return YES;
+ }
+ */
+
 - (void)refreshMenuScreens {
     [controls refreshScreens];
 
@@ -53,6 +64,7 @@
             NSLog(@"Remove 'Auto-Brightness' menu item");
         }
     }
+    
 
     // add new outlets for screens
     for(Screen* screen in controls.screens){
@@ -89,6 +101,24 @@
 
         [screen.brightnessOutlets addObjectsFromArray:@[ slider, brightLevelLabel ]];
     }
+
+    // DarkMode
+    if ([[[NSUserDefaults standardUserDefaults] stringForKey:@"AppleInterfaceStyle"] isEqualToString:@"Dark"]) {
+        self.darkModeOn = YES;
+        [self itemWithTag:kMenuToggleTheme].state = NSOnState;
+    }
+    else {
+        self.darkModeOn = NO;
+        [self itemWithTag:kMenuToggleTheme].state = NSOffState;
+    }
+    
+    float scale = [[NSScreen mainScreen] backingScaleFactor];
+    [self itemWithTag:kMenuResolution].title = @"High DPI";
+    if (scale > 1.0) {
+        [self itemWithTag:kMenuResolution].state = NSOnState;
+    } else {
+        [self itemWithTag:kMenuResolution].state = NSOffState;
+    }
 }
 
 - (IBAction)toggledAutoBrightness:(NSMenuItem*)sender {
@@ -113,7 +143,6 @@
 }
 
 - (IBAction)quit:(id)sender {
-    //exit(1);
     [[NSApplication sharedApplication] terminate:self];
 }
 
@@ -160,6 +189,10 @@
         hotKeyID.signature='htk5';
         hotKeyID.id=5;
         RegisterEventHotKey(kVK_BrightnessDown, cmdKey+optionKey, hotKeyID, GetApplicationEventTarget(), 0, &hotKeyRef);
+        
+        hotKeyID.signature='htk6';
+        hotKeyID.id=6;
+        RegisterEventHotKey(kVK_ANSI_R, cmdKey+optionKey, hotKeyID, GetApplicationEventTarget(), 0, &hotKeyRef);
     }
 }
 
@@ -182,38 +215,153 @@ OSStatus OnHotKeyEvent(EventHandlerCallRef nextHandler, EventRef theEvent, void 
     
     switch (l) {
         case 1:
-            NSLog(@"Capture COMMAND + OPTION + T");
-            [app helloWorld];
+            DebugLog(@"Capture COMMAND + OPTION + T");
+            [app toggleTheme:nil];
             break;
         case 2:
-            NSLog(@"Capture BRIGHTNESS_UP");
+            DebugLog(@"Capture BRIGHTNESS_UP");
             if ([controls.screens count] < 1) return 0;
             [controls.screens[0] setBrightnessRelativeToValue:@"5+"];
             break;
         case 3:
-            NSLog(@"Capture BRIGHTNESS_DOWN");
+            DebugLog(@"Capture BRIGHTNESS_DOWN");
             if ([controls.screens count] < 1) return 0;
             [controls.screens[0] setBrightnessRelativeToValue:@"5-"];
             break;
         case 4:
-            NSLog(@"Capture COMMAND + OPTION + BRIGHTNESS_UP");
-            for(Screen* screen in controls.screens) {
-                [[controls screenForDisplayID:screen.screenNumber] setBrightnessRelativeToValue:@"5+"];
-            }
+            DebugLog(@"Capture COMMAND + OPTION + BRIGHTNESS_UP");
+            /*
+             for(Screen* screen in controls.screens) {
+             [[controls screenForDisplayID:screen.screenNumber] setBrightnessRelativeToValue:@"5+"];
+             }
+             */
+            [app setDisplayResolutionHiDpi];
             break;
         case 5:
-            NSLog(@"Capture COMMAND + OPTION + BRIGHTNESS_DOWN");
-            for(Screen* screen in controls.screens) {
-                [[controls screenForDisplayID:screen.screenNumber] setBrightnessRelativeToValue:@"5-"];
-            }
+            DebugLog(@"Capture COMMAND + OPTION + BRIGHTNESS_DOWN");
+            /*
+             for(Screen* screen in controls.screens) {
+             [[controls screenForDisplayID:screen.screenNumber] setBrightnessRelativeToValue:@"5-"];
+             }
+             */
+            [app setDisplayResolution];
             break;
+        case 6:
+            DebugLog(@"Capture COMMAND + OPTION + R");
+            [app toggleDisplayResolution:nil];
+            break;
+            
     }
     
     return noErr;
 }
 
-- (void)helloWorld {
-    NSLog(@"Hello World");
+
+// SetDisplayResolution
+- (IBAction)toggleDisplayResolution:(id)sender {
+    float scale = [[NSScreen mainScreen] backingScaleFactor];
+    if (scale > 1.0) {
+        [self setDisplayResolution];
+    } else {
+        [self setDisplayResolutionHiDpi];
+    }
+}
+
+- (void)setDisplayResolution {
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath:[[NSBundle mainBundle] pathForResource:@"SetDisplayResolution" ofType:nil]];
+    [task setArguments:[NSArray arrayWithObjects:@"-w", @"2560", @"-h", @"1440", @"-s", @"1", @"-o", nil]];
+    [task setStandardOutput:[NSPipe pipe]];
+    [task setStandardInput:[NSPipe pipe]];
+    [task launch];
+}
+
+- (void)setDisplayResolutionHiDpi {
+    NSTask *task = [[NSTask alloc] init];
+    [task setLaunchPath:[[NSBundle mainBundle] pathForResource:@"SetDisplayResolution" ofType:nil]];
+    [task setArguments:[NSArray arrayWithObjects:@"-w", @"1920", @"-h", @"1080", @"-s", @"2", @"-o", nil]];
+    [task setStandardOutput:[NSPipe pipe]];
+    [task setStandardInput:[NSPipe pipe]];
+    [task launch];
+}
+
+
+/*
+ * DarkMode inspired by https://github.com/NSRover/NinjaMode
+ * Functions to toggle between Light- and Dark-Mode.
+ * Optional - place two wallpapers named light.jpg and dark.jpg
+ * in ~/Documents/AppModes/ to set them in addition.
+ */
+
+- (IBAction)toggleTheme:(id)sender {
+    _darkModeOn = !_darkModeOn;
+    
+    if (_darkModeOn) {
+        [self darkTheme];
+    }
+    else {
+        [self lightTheme];
+    }
+}
+
+- (void)darkTheme {
+    // Set the desktop image
+    [self desktopImageWithPath:[@"~/Documents/AppModes/dark.jpg" stringByExpandingTildeInPath]];
+    
+    // Call applescript to set appearance to dark mode
+    NSAppleScript* appleScript = [[NSAppleScript alloc] initWithSource:
+                                  @"\
+                                  tell application \"System Events\"\n\
+                                  tell appearance preferences\n\
+                                  set dark mode to true\n\
+                                  end tell\n\
+                                  end tell"];
+    [appleScript executeAndReturnError:nil];
+    
+    // To be sure
+    self.darkModeOn = YES;
+}
+
+- (void)lightTheme {
+    // Set the desktop image
+    [self desktopImageWithPath:[@"~/Documents/AppModes/light.jpg" stringByExpandingTildeInPath]];
+    
+    // Call applescript to set appearance to light mode
+    NSAppleScript* appleScript = [[NSAppleScript alloc] initWithSource:
+                                  @"\
+                                  tell application \"System Events\"\n\
+                                  tell appearance preferences\n\
+                                  set dark mode to false\n\
+                                  end tell\n\
+                                  end tell"];
+    [appleScript executeAndReturnError:nil];
+    
+    // To be sure
+    self.darkModeOn = NO;
+}
+
+
+- (void)desktopImageWithPath:(NSString *)path {
+    // If the file does not exist, we assume there is no interest and nothing to do
+    if ([[NSFileManager defaultManager] fileExistsAtPath:path]) {
+
+        NSError *error;
+        [[NSWorkspace sharedWorkspace] setDesktopImageURL:[NSURL fileURLWithPath:path]
+                                                forScreen:[NSScreen mainScreen]
+                                                  options:[NSDictionary dictionaryWithObjectsAndKeys:
+                                                           [NSNumber numberWithBool:NO], NSWorkspaceDesktopImageAllowClippingKey,
+                                                           [NSNumber numberWithInteger:NSImageScaleProportionallyUpOrDown], NSWorkspaceDesktopImageScalingKey,
+                                                           /* [NSColor blackColor], NSWorkspaceDesktopImageFillColorKey, */
+                                                           nil]
+                                                    error:&error];
+        if (error) {
+            [[NSApplication sharedApplication] presentError: error
+                                             modalForWindow: [[NSApplication sharedApplication] keyWindow]
+                                                   delegate: nil
+                                         didPresentSelector: nil
+                                                contextInfo: NULL];
+        }
+    }
 }
 
 @end

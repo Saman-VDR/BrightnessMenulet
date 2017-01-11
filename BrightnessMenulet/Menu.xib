@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="11762" systemVersion="16C67" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="9532"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="11762"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner"/>
@@ -17,22 +17,35 @@
                 <outlet property="mainMenu" destination="HcV-y6-KU8" id="Arm-DQ-i47"/>
             </connections>
         </customObject>
-        <menu id="HcV-y6-KU8" userLabel="MainMenu" customClass="MainMenuController">
+        <menu autoenablesItems="NO" id="HcV-y6-KU8" userLabel="MainMenu" customClass="MainMenuController">
             <items>
                 <menuItem isSeparatorItem="YES" id="tNW-ho-aAe"/>
-                <menuItem title="Auto-Brightness" id="qEz-pR-v4G">
+                <menuItem title="Auto-Brightness" tag="5" id="qEz-pR-v4G">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="toggledAutoBrightness:" target="HcV-y6-KU8" id="gwe-1e-eCo"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Preferences" id="Arq-Dx-QdB">
+                <menuItem title="Resolution" tag="4" id="gW9-it-dbp">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="toggleDisplayResolution:" target="HcV-y6-KU8" id="i0w-W4-Q56"/>
+                    </connections>
+                </menuItem>
+                <menuItem title="Dark Theme" tag="3" id="kxu-gq-GFR">
+                    <modifierMask key="keyEquivalentModifierMask"/>
+                    <connections>
+                        <action selector="toggleTheme:" target="HcV-y6-KU8" id="75W-Jk-ojJ"/>
+                    </connections>
+                </menuItem>
+                <menuItem isSeparatorItem="YES" id="6YG-Ps-Ari"/>
+                <menuItem title="Preferences" tag="2" id="Arq-Dx-QdB">
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
                         <action selector="preferences:" target="HcV-y6-KU8" id="rLo-1U-Hmg"/>
                     </connections>
                 </menuItem>
-                <menuItem title="Quit" id="cbb-ao-sb3">
+                <menuItem title="Quit" tag="1" id="cbb-ao-sb3">
                     <attributedString key="attributedTitle"/>
                     <modifierMask key="keyEquivalentModifierMask"/>
                     <connections>
@@ -43,7 +56,7 @@
             <connections>
                 <outlet property="autoBrightnessItem" destination="qEz-pR-v4G" id="qb6-Ck-2kN"/>
             </connections>
-            <point key="canvasLocation" x="-1908.5" y="-2454.5"/>
+            <point key="canvasLocation" x="-2286" y="-2883"/>
         </menu>
     </objects>
 </document>

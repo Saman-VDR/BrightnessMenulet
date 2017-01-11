@@ -12,6 +12,7 @@
 		0B4E1FEF19E5FEBB0044BAFE /* PreferencesController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4E1FEE19E5FEBB0044BAFE /* PreferencesController.m */; };
 		0BCFE67319C9F1B40094B561 /* DDCControls.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BCFE67219C9F1B30094B561 /* DDCControls.m */; };
 		498A53C91E00AA190036FC5A /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 498A53C81E00AA190036FC5A /* Carbon.framework */; };
+		49E3C6AD1E09A56A005FEE38 /* SetDisplayResolution in Resources */ = {isa = PBXBuildFile; fileRef = 49E3C6AC1E09A56A005FEE38 /* SetDisplayResolution */; };
 		7D2FF98311406B0100707C79 /* MainMenuController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D2FF98211406B0100707C79 /* MainMenuController.m */; };
 		7D2FF98611406B2C00707C79 /* icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D2FF98411406B2C00707C79 /* icon.png */; };
 		7D2FF98711406B2C00707C79 /* icon-alt.png in Resources */ = {isa = PBXBuildFile; fileRef = 7D2FF98511406B2C00707C79 /* icon-alt.png */; };
@@ -40,6 +41,7 @@
 		32CA4F630368D1EE00C91783 /* BrightnessMenulet_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BrightnessMenulet_Prefix.pch; sourceTree = "<group>"; };
 		498493181E01EFFA00FA89FD /* VirtualKeyCodes.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VirtualKeyCodes.h; sourceTree = "<group>"; };
 		498A53C81E00AA190036FC5A /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = System/Library/Frameworks/Carbon.framework; sourceTree = SDKROOT; };
+		49E3C6AC1E09A56A005FEE38 /* SetDisplayResolution */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = SetDisplayResolution; sourceTree = "<group>"; };
 		7D2FF98111406B0100707C79 /* MainMenuController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MainMenuController.h; sourceTree = "<group>"; };
 		7D2FF98211406B0100707C79 /* MainMenuController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MainMenuController.m; sourceTree = "<group>"; };
 		7D2FF98411406B2C00707C79 /* icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon.png; sourceTree = "<group>"; };
@@ -160,6 +162,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				49E3C6AC1E09A56A005FEE38 /* SetDisplayResolution */,
 				7D2FF98411406B2C00707C79 /* icon.png */,
 				7D2FF98511406B2C00707C79 /* icon-alt.png */,
 				7D2FFBA11140CC8700707C79 /* brightness-sun-transparent-black.icns */,
@@ -255,6 +258,7 @@
 			files = (
 				7D2FF98611406B2C00707C79 /* icon.png in Resources */,
 				7D2FF98711406B2C00707C79 /* icon-alt.png in Resources */,
+				49E3C6AD1E09A56A005FEE38 /* SetDisplayResolution in Resources */,
 				0B4E1FEC19E5FD4B0044BAFE /* Preferences.xib in Resources */,
 				8670E94C1BC44EB800402DE5 /* Menu.xib in Resources */,
 				7D2FFBA21140CC8700707C79 /* brightness-sun-transparent-black.icns in Resources */,
@@ -325,6 +329,7 @@
 				LIBRARY_SEARCH_PATHS = "$(inherited)";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
+				"OTHER_CFLAGS[arch=*]" = "-DTT_SIMPLE";
 				PRODUCT_BUNDLE_IDENTIFIER = com.redpanda.BrightnessMenulet;
 				PRODUCT_NAME = "Brightness Menulet";
 				PROVISIONING_PROFILE = "";
